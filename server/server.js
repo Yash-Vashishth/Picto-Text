@@ -13,6 +13,6 @@ app.use(cors())
 await connectDB()
 
 
-app.get('/',(req,res)=>res.send("API working "))
-app.use("/api/user", userRouter)
+app.get('/',(req,res)=>res.send("API working "));
+app.use("/api/user", userRouter);
 app.listen(PORT,()=>console.log('Server running on port '+PORT));
