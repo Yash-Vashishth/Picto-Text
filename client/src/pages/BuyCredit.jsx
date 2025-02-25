@@ -1,9 +1,60 @@
+import {plans} from '../assets/assets.js'
 import { useContext } from 'react'
-import {plans} from '../assets/assets'
 import {AppContext} from '../context/AppContext'
 import {motion} from 'motion/react'
+import { useNavigate } from 'react-router-dom'
+import { toast } from 'react-toastify'
+import axios from 'axios'
 const BuyCredit = () => {
-  const {user} = useContext(AppContext)
+  const {user,backendURL , loadCreditsData, token, setShowLogin} = useContext(AppContext)
+
+  const navigate = useNavigate()
+
+  const initPay = async (order) => {
+    const options = {
+      key:import.meta.env.VITE_RAZORPAY_KEY_ID,
+      amount: order.amount,
+      currency: order.currency,
+      name:'Credits Payment',
+      description:'Credits Payment',
+      order_id:order.id,
+      receipt:order.receipt,
+      handler:async(response)=>{
+        try {
+          const {data} = await axios.post(backendURL+'api/user/verify-razor',response, {headers: {token}})
+
+          if(data.success){
+            loadCreditsData();
+            navigate('/')
+            toast.success('Credit Added')
+          }
+        }catch (error) {
+          toast.error(error.message)
+          
+        }
+      }
+      
+    }
+    const rzp = new window.Razorpay(options)
+    rzp.open() 
+  }
+
+  const paymentRazorpay = async (planId) => {
+    try {
+      if(!user){
+        setShowLogin(true)
+      }
+
+      const {data} = await axios.post({backendURL}+'/api/user/pay-razor', {planId}, {headers: {token}} )
+
+      if(data.success){
+        initPay(data.order)
+      }
+    } catch (error) {
+      toast.error(error.message)
+    }
+  }
+
   return (
     <motion.div className='min-h-[80vh] text-center pt-14 mb-10'
     initial={{opacity:0.2, y:100}}
@@ -50,7 +101,7 @@ const BuyCredit = () => {
             </div>
             <div>
           <div className="flex px-6 pb-8 sm:px-8">
-            <button className="flex items-center justify-center w-full px-6 py-2.5 text-center text-white duration-200 bg-black border-2 border-black rounded-full nline-flex hover:bg-transparent hover:border-black hover:text-black focus:outline-none focus-visible:outline-black text-sm focus-visible:ring-black" >
+            <button onClick={()=>{paymentRazorpay(item.id)}} className="flex items-center justify-center w-full px-6 py-2.5 text-center text-white duration-200 bg-black border-2 border-black rounded-full nline-flex hover:bg-transparent hover:border-black hover:text-black focus:outline-none focus-visible:outline-black text-sm focus-visible:ring-black" >
             {user === null ? 'Get Started' : user ? 'Purchase' : 'Get Started'}
             </button>
           </div>        
