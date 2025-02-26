@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@react-three/fiber": "^8.17.14",
-    "@tailwindcss/oxide-win32-x64-msvc": "^4.0.8",
+    "@tailwindcss/oxide-linux-x64-msvc": "^4.0.8",
     "@tailwindcss/vite": "^4.0.1",
     "axios": "^1.7.9",
     "clsx": "^2.1.1",
