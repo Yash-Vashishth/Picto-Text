@@ -1,0 +1,9 @@
+#ignoring specific files
+.env
+
+#ignoring specific directions
+/logs
+
+#ignoring folders 
+node_modules
+**/node_modules
